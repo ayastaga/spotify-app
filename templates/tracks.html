@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div class="container ">
+        <h1 class="text-center my-4" id="tracks-title">Top Tracks (Last 4 Weeks)</h1>
+        <div class="container d-flex justify-content-around">
+            <button id="custom-btn-short-term" class="btn border" style="width: 32%; background-color: black; color: white;" onclick="updateTracks('tracks', 'short-term', 'Last 4 Weeks')">Last 4 Weeks</button>
+            <button id="custom-btn-medium-term" class="btn border" style="width: 32%;" onclick="updateTracks('tracks', 'medium-term', 'Last 6 Months')">Last 6 Months</button>
+            <button id="custom-btn-long-term"class="btn border" style="width: 32%;" onclick="updateTracks('tracks', 'long-term', 'Last Year')">Last Year</button>
+        </div>
+        <div class="container my-4" id="tracks-list">
+            {% set ns = namespace(counter=0) %}
+            {% for track in fav_tracks %}
+                {% set ns.counter = ns.counter + 1 %}
+                <div class="container border custom-card">
+                    <div class="container d-flex" style="align-content: center; align-items: center;">
+                        <div style="width: 100px; max-width: 100px; min-width: 100px;">
+                            <h1 class="display-1 text-muted user-select-none" style="text-align: center; align-content: center;">{{ns.counter}}</h1>
+                        </div>
+                        <img id="img-styling" src="{{track.album.images[0].url}}" class="track-image">
+                        <div class="custom-card-body">
+                            <!-- href="{{track.external_urls.spotify}}"-->
+                            <h4><a id="play_song" onclick="setTrack('{{track.id}}')" target="_blank">{{track.name}}</a></h4>
+                            <p>by {{track.artists | map(attribute='name') | join(', ') }}</p>
+                        </div>
+                    </div>
+                    <div class="float-end border p-2 mx-3 user-select-none" style="width: 80px; text-align: center;">
+                        <h2>{{track.popularity}}</h2>
+                        <p style="padding: 0; margin: 0; font-size: 12px;"><small>popularity</small></p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

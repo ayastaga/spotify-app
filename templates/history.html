@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div class="container">
+        <h1> recently played</h1>
+        <hr>
+        <div class="table-responsive panel-body">
+            <table class="table">
+                <thead>
+                    <th>cover</th>
+                    <th>name</th>
+                    <th>artists</th>
+                    <th>timestamp</th>
+                    <th></th>
+                </thead>
+                <tbody>
+                    {% for track in recently_played %}
+                        <tr>
+                            <td><img class="custom-cover" src="{{track.track.album.images[0].url}}" onclick="setTrack('{{track.track.id}}')" style="height: 50px;"></td>
+                            <td>{{track.track.name}}</td>
+                            <td>{{track.track.artists | map(attribute='name') | join(', ') }}</td>
+                            <td>{{track.played_at | convert_time}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div class="container ">
+        <h1 class="text-center my-4" id="artists-title">Top Artists (Last 4 Weeks)</h1>
+        <div class="container d-flex justify-content-around">
+            <button id="custom-btn-short-term" class="btn border" style="width: 32%; background-color: black; color: white;" onclick="updateTracks('artists', 'short-term', 'Last 4 Weeks')">Last 4 Weeks</button>
+            <button id="custom-btn-medium-term" class="btn border" style="width: 32%;" onclick="updateTracks('artists', 'medium-term', 'Last 6 Months')">Last 6 Months</button>
+            <button id="custom-btn-long-term"class="btn border" style="width: 32%;" onclick="updateTracks('artists', 'long-term', 'Last Year')">Last Year</button>
+        </div>
+        <div class="container my-4" id="artists-list">
+            {% set ns = namespace(counter=0) %}
+            {% for artist in fav_artists %}
+                {% set ns.counter = ns.counter + 1 %}
+                <div class="container border custom-card">
+                    <div class="container d-flex" style="align-content: center; align-items: center;">
+                        <div style="width: 100px; max-width: 100px; min-width: 100px;">
+                            <h1 class="display-1 text-muted user-select-none" style="text-align: center; align-content: center;">{{ns.counter}}</h1>
+                        </div>
+                        <img id="img-styling" src="{{artist.images[0].url}}">
+                        <div class="custom-card-body">
+                            <h4>{{artist.name}}</h4>
+                            {% if artist.genres|length > 0 %}
+                                <div id="tags" class="mr-2" style="color: white;">
+                                    {% for genre in artist.genres %}
+                                        <p>{{genre}}</p>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div id="tags-not-found" class="mr-2" style="color: white;">
+                                    <p>no tag found</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="float-end border p-2 mx-3 user-select-none popularity_animation" style="width: 6em; text-align: center;">
+                        <h2>{{artist.popularity}}</h2>
+                        <p style="padding: 0; margin: 0; font-size: 12px;"><small>popularity</small></p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

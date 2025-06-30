@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div class="container pb-3">
+        <div class="current-library d-flex flex-column border rounded">
+            <h1 class="text-center my-2" id="h1_title">your playlists</h1>    
+            <hr>
+            <div class="container d-flex justify-content-between overflow-auto" style="height: 500px;">
+                <ol>
+                    {% for playlist in user_playlists[:12] %}
+                        <iframe onclick="setTrack()" style="border-radius:12px; height: 400px; width: 48%;" src="https://open.spotify.com/embed/playlist/{{playlist.id}}" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                    {% endfor %}
+                </ol>
+            </div>
+            <div class="text-center my-3">
+                <a href="https://open.spotify.com/home?facet=music-chip" target="_blank">
+                    <button class="btn btn-primary" style="width: 90%; align-items: center; align-content: center;">view more</button>
+                </a>
+            </div>
+        </div>
+        {% if user_audiobooks|length > 1 %}
+            <div class="current-library d-flex flex-column border rounded mt-3">
+                <h1 id="h1_title" class="text-center my-3">audiobooks</h1>
+                <hr>
+                <div class="container d-flex justify-content-between overflow-auto" style="height: 500px;">
+                    <ol>
+                        {% for audiobook in user_audiobooks[:6] %}
+                            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/audibook/{{audiobook.id}}" width="48%" height="400px" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                        {% endfor %}
+                    </ol>
+                </div>
+                <div class="text-center my-3">
+                    <a href="https://open.spotify.com/home?facet=audiobooks-chip" target="_blank">
+                        <button class="btn btn-primary" style="width: 90%; align-items: center; align-content: center;">view more</button>
+                </div>
+            </div>
+        {% endif %}
+        
+        {% if user_episodes|length > 1 %}
+            <div class="current-library d-flex flex-column border rounded mt-3">
+                <h1 id="h1_title" class="text-center my-3">episodes</h1>
+                <hr>
+                <div class="container d-flex justify-content-between overflow-auto" style="height: 500px;">
+                    <ol>
+                        {% for episode in user_episodes[:6] %}
+                            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/episode/{{episode.episode.id}}" width="48%" height="400px" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                        {% endfor %}
+                    </ol>
+                </div>
+                <div class="text-center my-3">
+                    <a href="https://open.spotify.com/home?facet=podcasts-chip" target="_blank">
+                        <button class="btn btn-primary" style="width: 90%; align-items: center; align-content: center;">view more</button>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if user_shows|length > 1 %}
+            <div class="current-library d-flex flex-column border rounded mt-3">
+                <h1 id="h1_title" class="text-center my-3">shows</h1>
+                <hr>
+                <div class="container d-flex justify-content-between overflow-auto" style="height: 500px;">
+                    <ol>
+                        {% for show in user_shows[:6] %}
+                            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/show/{{show.show.id}}" width="48%" height="400px" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                        {% endfor %}
+                    </ol>
+                </div>
+                <div class="text-center my-3">
+                    <a href="https://open.spotify.com/home?facet=audiobooks-chip" target="_blank">
+                        <button class="btn btn-primary" style="width: 90%; align-items: center; align-content: center;">view more</button>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
