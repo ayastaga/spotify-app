@@ -2,9 +2,9 @@ from email.message import EmailMessage
 import ssl
 import smtplib
 
-email_sender = 'ayavasu@gmail.com'
-email_password = 'eret iqxi qghh jwgu'
-email_reciever = 'agasanya711@gmail.com'
+email_sender = 34734278984932
+email_password = 34734278984932
+email_reciever = 34734278984932
 
 subject = '[DELETE THIS] Thank you for signing up! [DELETE THIS]'
 body = """
