@@ -1,0 +1,227 @@
+
+@font-face {
+  font-family: PPNeueMontreal;
+  src: url(ppneuemontreal-medium.woff);
+}
+
+* {
+  font-family: PPNeueMontreal;
+}
+
+
+.table-responsive {
+    height: 500px;
+}
+
+#card-info:hover {
+  cursor: pointer;
+  background-color: black;
+  color: white;
+}
+
+#custom-btn:hover{
+  background-color: #1DB954;
+  color: white;
+}
+
+#custom-btn:active {
+  background-color: #2a914e;
+  color: white;
+}
+
+.custom-card-body {
+  align-content: center;
+}
+
+.custom-card-body a {
+  text-decoration: none;
+}
+
+.custom-card-body a:hover {
+  text-decoration: underline;
+}
+
+.custom-card {
+  display: inline-flex;
+  padding: 1em;
+  border: 1px solid black;
+  border-radius: 1em;
+  margin-bottom: 1em;
+  align-items: center;
+}
+
+.custom-card img {
+  max-height: 5em;
+  margin-right: 2em;
+  margin-left: 0.5em;
+}
+
+#tags p {    
+    display: inline-block;
+    height: 24px;
+    line-height: 24px;
+    position: relative;
+    padding: 0 10px 0 12px;
+    background: #1DB954;    
+    -webkit-border-bottom-right-radius: 3px;    
+    border-bottom-right-radius: 3px;
+    -webkit-border-top-right-radius: 3px;    
+    border-top-right-radius: 3px;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    color:white#fff;
+    font-size: 12px;
+    font-family: "Lucida Grande","Lucida Sans Unicode",Verdana,sans-serif;
+    text-decoration: none;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    font-weight: bold;
+    }
+
+#tags-not-found p {    
+    display: inline-block;
+    height: 24px;
+    line-height: 24px;
+    position: relative;
+    padding: 0 10px 0 12px;
+    background: #929292;    
+    -webkit-border-bottom-right-radius: 3px;    
+    border-bottom-right-radius: 3px;
+    -webkit-border-top-right-radius: 3px;    
+    border-top-right-radius: 3px;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    color:white#fff;
+    font-size: 12px;
+    font-family: "Lucida Grande","Lucida Sans Unicode",Verdana,sans-serif;
+    text-decoration: none;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    font-weight: bold;
+    }
+
+h4:hover {
+  cursor: pointer;
+  text-decoration: underline;
+  color: #0d6efd;
+}
+
+#img-styling {
+   object-fit: cover;
+   width: 100px;
+   height: 100%;
+   min-width: 100px;
+   max-width: 100px;
+}
+
+#img-styling-news {
+   object-fit: cover;
+   width: 100px;
+   height: 100%;
+   min-width: 100px;
+   max-width: 100px;
+}
+
+#h1_title {
+  color: #1DB954;
+}
+
+.truncate-multiline {
+  display: -webkit-box;
+  max-height: 100px;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.custom-cover:hover {
+  cursor: pointer;
+  -webkit-box-shadow: 14px 4px 17px -8px rgba(0,0,0,0.7); 
+  box-shadow: 14px 4px 17px -8px rgba(0,0,0,0.7);
+}
+
+.title-text {
+  font-size: 9rem; 
+  line-height: 1;
+}
+
+#custom-list-items li {
+  font-size: 4.5rem;
+  line-height: 1.2;
+  margin: 0;
+}
+
+@media (min-width: 0px) {
+  #custom-list-items li {
+    font-size: 2.2rem;
+    line-height: 1.2;
+  }
+}
+
+@media (min-width: 640px) {
+  .title-text {
+    font-size: 10rem;
+    line-height: 1;
+  }
+
+  .subtitle-text {
+    font-size: 1.35rem;
+  }
+
+  #custom-list-items li {
+    font-size: 2.3rem;
+    line-height: 1.2;
+  }
+}
+
+@media (min-width: 768px) {
+  .title-text {
+    font-size: 13rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .title-text {
+    font-size: 16rem;
+  }
+
+  #custom-list-items li {
+    font-size: 3.25rem;
+    line-height: 1.2;
+  }
+}
+
+@media (min-width: 1280px) {
+  .title-text {
+    font-size: 19rem;
+  }
+}
+
+@media (min-width: 1536px) {
+  .title-text {
+    font-size: 23rem;
+  }
+}
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+.nav-item:hover {
+  background-color: lightgrey;
+  color: white;
+}
+.custom-sidebar {
+  overflow-y: scroll;
+   height:400px;
+}
+
+.nav-item-layout:hover {
+  background-color: black;
+  color: white;
+}
+
+.nav-item-layout {
+  color:black;
+  text-decoration: none;
+}
