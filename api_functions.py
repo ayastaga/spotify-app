@@ -4,11 +4,9 @@ import urllib.parse
 from dotenv import load_dotenv
 from base64 import b64encode
 import sqlite3
-import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import StandardScaler
-import numpy as np
-from csv_to_sql import cos_sim
+from playlist_ai import cos_sim
 from datetime import datetime
 import tzlocal
 from zoneinfo import ZoneInfo
@@ -17,7 +15,6 @@ from bs4 import BeautifulSoup
 import nlpcloud
 from flask import redirect, render_template, session
 from functools import wraps
-from werkzeug.security import check_password_hash, generate_password_hash
 from email.message import EmailMessage
 import ssl
 import smtplib
@@ -234,7 +231,6 @@ def resume_playback(headers):
         'position_ms' : 0
     }
     response = requests.put(API_BASE_URL + 'me/player/play', headers=headers, json=data)
-    print(response.json())
     return response.json()
 
 
@@ -275,7 +271,6 @@ def playlist_checker(headers, title):
             
             # deletes tracks
             delete_response = requests.delete(API_BASE_URL + f'playlists/{playlist_id}/tracks', headers=headers, json=data)
-            print(delete_response.json())
         else:
             print("no tracks found to delete")
     else:
@@ -363,19 +358,6 @@ def rec_feature_playlist(headers, term, title):
 
     # return that playlist's id for embed
     return playlist_id
-
-# NOT DONE YET
-def rec_top_artists_playlists(headers, term, title):
-    # find playlist using top artists
-    pass
-
-
-# NOT DONE YET
-def current_mood(headers):
-    pass
-    # 1. extract user's top in the past 4 weeks
-    # 2. look up the songs in the dataset and create a new dataset involving them 
-    # 3. using clustering, cluster them into moods that the user might be feeling
 
 def add_to_mailing_list(email_address, password):
     try:
