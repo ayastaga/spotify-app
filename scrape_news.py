@@ -1,17 +1,13 @@
-import json 
+# PURPOSE: TO SCRAPE NEWS AND ADD IT INTO THE DATABASE FOR THE SPOTIFY-NEWS INTERFACE
+
 import requests
 from bs4 import BeautifulSoup
 import nlpcloud
-import pprint
 import sqlite3 
 import dateparser
 from tzlocal import get_localzone
 from datetime import datetime
 from selenium import webdriver
-
-
-import pandas as pd # for visual purposes only beta
-
 
 con = sqlite3.connect("spotify_data.db", check_same_thread=False)
 cur = con.cursor()
@@ -141,15 +137,8 @@ def getNewsDataFromSpotify():
         except Exception as e:
             print(e)
                 
-#cur.execute("DELETE FROM music_news")
-#con.commit()
-
-getNewsDataFromSpotify()
-getNewsDataFromGoogle()
+#getNewsDataFromSpotify() --> run this to put in data
+#getNewsDataFromGoogle() --> run this to put in data
 print(pd.read_sql_query("SELECT * FROM music_news", con))
-
-
-#cur.execute("DELETE FROM music_news")
-#con.commit()
 
 
