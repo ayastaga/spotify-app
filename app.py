@@ -1,225 +1,212 @@
-from flask import Flask, request, render_template, redirect, jsonify, session
-from flask_session import Session
-from api_functions import *
-from datetime import datetime
-import re
+import os
+from flask import Flask, request, redirect, session, jsonify, render_template, url_for, flash
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+import requests
+from dotenv import load_dotenv
+import sqlite3
+import pandas as pd
+from datetime import datetime, timedelta
+import json
 
+# Load environment variables
+load_dotenv()
+
+# Create Flask app
 app = Flask(__name__)
 
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
+# Configure app for Vercel deployment
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-here')
 
-app.jinja_env.filters["convert_time"] = convert_time
+# Spotify API credentials
+SPOTIFY_CLIENT_ID = os.environ.get('SPOTIFY_CLIENT_ID')
+SPOTIFY_CLIENT_SECRET = os.environ.get('SPOTIFY_CLIENT_SECRET')
+SPOTIFY_REDIRECT_URI = os.environ.get('SPOTIFY_REDIRECT_URI', 'https://your-app.vercel.app/callback')
 
-@app.route("/")
+# Spotify OAuth configuration
+SCOPE = 'user-read-private user-read-email user-top-read user-read-recently-played playlist-read-private user-library-read user-read-currently-playing user-read-playback-state'
+
+def create_spotify_oauth():
+    return SpotifyOAuth(
+        client_id=SPOTIFY_CLIENT_ID,
+        client_secret=SPOTIFY_CLIENT_SECRET,
+        redirect_uri=SPOTIFY_REDIRECT_URI,
+        scope=SCOPE,
+        show_dialog=True
+    )
+
+def get_token():
+    token_info = session.get('token_info')
+    if not token_info:
+        return None
+    
+    now = int(datetime.now().timestamp())
+    is_expired = token_info['expires_at'] - now < 60
+    
+    if is_expired:
+        sp_oauth = create_spotify_oauth()
+        token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
+        session['token_info'] = token_info
+    
+    return token_info
+
+@app.route('/')
 def index():
-    session.clear()
-    top_news = get_news(6)
-    return render_template("index.html", top_news=top_news)
+    return render_template('index.html')
 
-@app.route("/login")
+@app.route('/login')
 def login():
-    auth_url = get_auth_url()
+    sp_oauth = create_spotify_oauth()
+    auth_url = sp_oauth.get_authorize_url()
     return redirect(auth_url)
 
-@app.route("/logout")
+@app.route('/callback')
+def callback():
+    sp_oauth = create_spotify_oauth()
+    session.clear()
+    code = request.args.get('code')
+    
+    if not code:
+        return redirect(url_for('index'))
+    
+    token_info = sp_oauth.get_access_token(code)
+    session['token_info'] = token_info
+    
+    return redirect(url_for('dashboard'))
+
+@app.route('/logout')
 def logout():
     session.clear()
-    return redirect("/")
+    return redirect(url_for('index'))
 
-# refine this to have error messaging on the same page/div
-@app.route("/mailing_list_signup", methods=["GET", "POST"])
-def mailing_list_signup():
-    if request.method == "POST":
-        if not request.form.get("email_address"):
-            return apology("must provide email_address", 403)
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", request.form.get("email_address")):
-            return apology("please enter proper email address", 403)
-        if not request.form.get("password"):
-            return apology("must provide password", 403)
-        
-        email_address = request.form.get("email_address")
-        password = request.form.get("password")
-
-        user_message = add_to_mailing_list(email_address, password)
-
-        email_user()
-        
-        return apology(user_message, 403)
-    else:
-        return apology("MOM", 403)
-
-@app.route('/terms_and_conditions')
-def terms_and_conditions():
-    return render_template("terms-and-conditions.html")
-
-@app.route('/music_news')
-def music_news():
-    top_news = get_news(100)
-    return render_template('music_news.html', top_news=top_news)
-
-@app.route("/callback")
-def callback():
-    if 'error' in request.args:
-        return jsonify({"error": request.args['error']})
+@app.route('/dashboard')
+def dashboard():
+    token_info = get_token()
+    if not token_info:
+        return redirect(url_for('login'))
     
-    # going to request an access token here
-    if 'code' in request.args:
-        token_info = get_token_info(request.args['code'])
-        session['access_token'] = token_info['access_token']
-        session['refresh_token'] = token_info['refresh_token']
-        session['expires_at'] = token_info['expires_in'] + datetime.now().timestamp()
-        
-        headers = {
-            'Authorization' : f"Bearer {session['access_token']}"
-        }
-        session['user_id'] = get_user_id(headers)
-        return redirect('/tracks')
-        
+    sp = spotipy.Spotify(auth=token_info['access_token'])
     
-    return redirect('/')
-
-def check_token():
-    if 'access_token' not in session:
-        return None, redirect('/login' if 'access_token' not in session else '/refresh-token')
-
-    if datetime.now().timestamp() > session['expires_at']:
-        return redirect('/refresh-token')
-    
-    headers = {
-        'Authorization' : f"Bearer {session['access_token']}"
-    }
     try:
-        track_id = get_current_track(headers)['item']['id']
-    except:
-        track_id = get_recently_played(headers)['items'][0]['track']['id']
-    current_track = f"https://open.spotify.com/embed/track/{track_id}"
+        user_info = sp.current_user()
+        return render_template('dashboard.html', user=user_info)
+    except Exception as e:
+        flash(f'Error loading dashboard: {str(e)}', 'error')
+        return redirect(url_for('index'))
 
-    print(headers, current_track)
-    return headers, current_track
+@app.route('/top-tracks')
+def top_tracks():
+    token_info = get_token()
+    if not token_info:
+        return redirect(url_for('login'))
+    
+    sp = spotipy.Spotify(auth=token_info['access_token'])
+    time_range = request.args.get('time_range', 'medium_term')
+    
+    try:
+        top_tracks = sp.current_user_top_tracks(time_range=time_range, limit=20)
+        return render_template('top_tracks.html', tracks=top_tracks['items'], time_range=time_range)
+    except Exception as e:
+        flash(f'Error loading top tracks: {str(e)}', 'error')
+        return redirect(url_for('dashboard'))
 
-# ---------- JS ROUTES ----------
-@app.route('/current-track')
-def current_track():
-    headers, current_track = check_token()
-    return jsonify({'embed_url' : current_track})
+@app.route('/top-artists')
+def top_artists():
+    token_info = get_token()
+    if not token_info:
+        return redirect(url_for('login'))
+    
+    sp = spotipy.Spotify(auth=token_info['access_token'])
+    time_range = request.args.get('time_range', 'medium_term')
+    
+    try:
+        top_artists = sp.current_user_top_artists(time_range=time_range, limit=20)
+        return render_template('top_artists.html', artists=top_artists['items'], time_range=time_range)
+    except Exception as e:
+        flash(f'Error loading top artists: {str(e)}', 'error')
+        return redirect(url_for('dashboard'))
+
+@app.route('/playlists')
+def playlists():
+    token_info = get_token()
+    if not token_info:
+        return redirect(url_for('login'))
+    
+    sp = spotipy.Spotify(auth=token_info['access_token'])
+    
+    try:
+        playlists = sp.current_user_playlists()
+        return render_template('playlists.html', playlists=playlists['items'])
+    except Exception as e:
+        flash(f'Error loading playlists: {str(e)}', 'error')
+        return redirect(url_for('dashboard'))
 
 @app.route('/recently-played')
 def recently_played():
-    headers, current_tracks = check_token()
-    return jsonify(get_recently_played(headers))
-
-@app.route('/fav-tracks-short-term')
-def fav_tracks_route_short():
-    headers, _ = check_token()
-    return jsonify(get_top_items(headers, 'short_term', 'tracks'))
-
-@app.route('/fav-tracks-medium-term')
-def fav_tracks_medium():
-    headers, _ = check_token()
-    return jsonify(get_top_items(headers, 'medium_term', 'tracks'))
-
-@app.route('/fav-tracks-long-term')
-def fav_tracks_route_long():
-    headers, _ = check_token()
-    return jsonify(get_top_items(headers, 'long_term', 'tracks'))
-
-@app.route('/fav-artists-short-term')
-def fav_artists_short():
-    headers, _ = check_token()
-    return jsonify(get_top_items(headers, 'short_term', 'artists'))
-
-@app.route('/fav-artists-medium-term')
-def fav_artist_medium():
-    headers, _ = check_token()
-    return jsonify(get_top_items(headers, 'medium_term', 'artists'))
-
-@app.route('/fav-artists-long-term')
-def fav_artists_long():
-    headers, _ = check_token()
-    return jsonify(get_top_items(headers, 'long_term', 'artists'))
-
-
-# ---------- PAGES ----------
-
-@app.route('/account')
-@login_required
-def account():
-    headers, current_track = check_token()
-    account = get_account_info(headers)
-    return render_template("account.html", account=account)
-
-@app.route('/tracks')
-@login_required
-def tracks():
-    headers, current_track = check_token()
-    fav_tracks = get_top_items(headers, 'short_term', 'tracks')['items']
-    #return jsonify(tracks['recently_played'][0]['track']['name'])
-    return render_template('tracks.html', fav_tracks=fav_tracks, current_track=current_track)
-
-@app.route('/artists')
-@login_required
-def artists():
-    headers, current_track = check_token()
-    fav_artists = get_top_items(headers, 'short_term', 'artists')['items']
-    return render_template('artists.html', fav_artists=fav_artists, current_track=current_track)
-
-
-@app.route('/playlists')
-@login_required
-def playlists():
-    headers, current_track = check_token()
-    playlists = {
-        'short_term_rec' : rec_top_item_playlist(headers, 'short_term', 'Top Tracks From the Past 4 Weeks'),
-        'medium_term_rec' : rec_top_item_playlist(headers, 'medium_term', 'Top Tracks From the Past 6 Months'),
-        'long_term_rec' : rec_top_item_playlist(headers, 'long_term', 'Top Tracks From the Past Year'),
-        'ai_short_term_rec' : rec_feature_playlist(headers, 'short_term', 'Similar Songs From the Past 4 Weeks'),
-        'ai_medium_term_rec' : rec_feature_playlist(headers, 'medium_term', 'Similar Songs From the Past 6 Months'),
-        'ai_long_term_rec' : rec_feature_playlist(headers, 'long_term', 'Similar Songs From the Past Year')
-    }
-    return render_template('playlists.html', playlists=playlists, current_track=current_track)
-
-@app.route('/history')
-@login_required
-def history():
-    headers, current_track = check_token()
-    recently_played = get_recently_played(headers)['items']
-    return render_template('history.html', recently_played=recently_played, current_track=current_track)
-
-@app.route('/library')
-@login_required
-def library():
-    headers, current_track = check_token()
-    user_playlists = get_user_playlists(headers)['items']
-    user_audiobooks = get_audiobooks(headers)['items']
-    user_shows = get_shows(headers)['items']
-    user_episodes = get_episodes(headers)['items']
+    token_info = get_token()
+    if not token_info:
+        return redirect(url_for('login'))
     
-    return render_template('library.html', user_playlists=user_playlists, user_audiobooks=user_audiobooks, user_shows=user_shows, user_episodes=user_episodes, current_track=current_track)
-
-@app.route('/json_current_playlist')
-def json_current_playlist():
-    headers, _ = check_token()
-    user_playlists = get_user_playlists(headers)['items']
-    reduced = [{'id': p['id'], 'name': p['name']} for p in user_playlists]
-    return jsonify(reduced)
-
-
-# ---------- PAGES END ----------
-@app.route('/refresh-token')
-def refresh_token():
-    if 'refresh_token' not in session:
-        return redirect('/login')
+    sp = spotipy.Spotify(auth=token_info['access_token'])
     
-    # checking if access token is expired
-    if datetime.now().timestamp() > session['expires_at']:
-        new_token_info = custom_refresh_token(session['refresh_token'])
+    try:
+        recent_tracks = sp.current_user_recently_played(limit=50)
+        return render_template('recently_played.html', tracks=recent_tracks['items'])
+    except Exception as e:
+        flash(f'Error loading recently played tracks: {str(e)}', 'error')
+        return redirect(url_for('dashboard'))
 
-        session['access_token'] = new_token_info['access_token']
-        session['expires_at'] = new_token_info['expires_in'] + datetime.now().timestamp()
-
-        return redirect('/tracks')
+@app.route('/recommendations')
+def recommendations():
+    token_info = get_token()
+    if not token_info:
+        return redirect(url_for('login'))
     
+    sp = spotipy.Spotify(auth=token_info['access_token'])
+    
+    try:
+        # Get user's top tracks for seed tracks
+        top_tracks = sp.current_user_top_tracks(limit=5, time_range='short_term')
+        seed_tracks = [track['id'] for track in top_tracks['items']]
+        
+        # Get recommendations
+        recommendations = sp.recommendations(seed_tracks=seed_tracks[:5], limit=20)
+        return render_template('recommendations.html', tracks=recommendations['tracks'])
+    except Exception as e:
+        flash(f'Error loading recommendations: {str(e)}', 'error')
+        return redirect(url_for('dashboard'))
+
+@app.route('/profile')
+def profile():
+    token_info = get_token()
+    if not token_info:
+        return redirect(url_for('login'))
+    
+    sp = spotipy.Spotify(auth=token_info['access_token'])
+    
+    try:
+        user_info = sp.current_user()
+        return render_template('profile.html', user=user_info)
+    except Exception as e:
+        flash(f'Error loading profile: {str(e)}', 'error')
+        return redirect(url_for('dashboard'))
+
+@app.route('/api/health')
+def health_check():
+    return jsonify({'status': 'healthy', 'timestamp': datetime.now().isoformat()})
+
+# Error handlers
+@app.errorhandler(404)
+def not_found(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template('500.html'), 500
+
+# For Vercel deployment
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(debug=False)
+
+# Export the Flask app for Vercel
+app = app
