@@ -387,8 +387,8 @@ def add_to_mailing_list(email_address, password):
     
     return "ADDED"
 
-# we could maybe make this more dynamic?
-def email_user(email_address):
+# NEED TO IMPLEMENT AN EMAIL AUTOMATION SYSTEM WHICH SUGGESTS SHOWS NEARBY
+def email_user(email_address, coords):
     email_sender = 'ayavasu@gmail.com'
     subject = 'Thank you for signing up to Ecoute!'
     body = """
