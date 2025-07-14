@@ -18,7 +18,7 @@ cur = con.cursor()
 
 # MAILING LIST DATABASE
 try:
-    cur.execute("CREATE TABLE mailing_list (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, email_address TEXT NOT NULL, hash TEXT NOT NULL)")
+    cur.execute("CREATE TABLE mailing_list (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, email_address TEXT NOT NULL)")
     cur.execute("CREATE UNIQUE INDEX email_address ON mailing_list (email_address)")
 except Exception as e:
     print(f"\n\n{e}\n\n")
