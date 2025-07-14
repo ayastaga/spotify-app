@@ -1,7 +1,5 @@
 # ECOUTE
 
-[![Watch the video](https://img.youtube.com/vi/rWWk0AjyVKE/0.jpg)](https://www.youtube.com/watch?v=rWWk0AjyVKE)
-
 This is a web application designed for music-junkies who love to know _everything_ about their music. Within this website, you can login (done by usign uAuth2.0), after which you can see your:
 
 - Top artists (4 weeks, 6 months, 1 year)
@@ -25,3 +23,6 @@ The application is still underdevelopment and in the future, you can expect the 
     - how to outsource the database so it doesn't store locally
     - how to add env variables without making them client-side/public
     - replacing all the initialization calls with possibly an api to make the website less bulky
+
+## DEMO VIDEO
+[![Watch the video](https://img.youtube.com/vi/rWWk0AjyVKE/0.jpg)](https://www.youtube.com/watch?v=rWWk0AjyVKE)
