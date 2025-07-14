@@ -1,10 +1,11 @@
 from flask import Flask, request, render_template, redirect, jsonify, session
 from flask_session import Session
-from api_functions import *
+from init import *
+from scrape_news import *
 from datetime import datetime
 from werkzeug.security import generate_password_hash
-
 import re
+from api_functions import *
 
 app = Flask(__name__)
 
@@ -64,25 +65,28 @@ def music_news():
     top_news = get_news(100)
     return render_template('music_news.html', top_news=top_news)
 
+@app.route('/user_music_news')
+@login_required
+def logged_music_news():
+    _, current_track = check_token()
+    top_news = get_news(100)
+    return render_template('user_music_news.html', top_news=top_news, current_track=current_track)
+
 @app.route("/callback")
 def callback():
     if 'error' in request.args:
         return jsonify({"error": request.args['error']})
-    
     # going to request an access token here
     if 'code' in request.args:
         token_info = get_token_info(request.args['code'])
         session['access_token'] = token_info['access_token']
         session['refresh_token'] = token_info['refresh_token']
         session['expires_at'] = token_info['expires_in'] + datetime.now().timestamp()
-        
         headers = {
             'Authorization' : f"Bearer {session['access_token']}"
         }
         session['user_id'] = get_user_id(headers)
         return redirect('/tracks')
-        
-    
     return redirect('/')
 
 def check_token():
@@ -207,6 +211,11 @@ def json_current_playlist():
     user_playlists = get_user_playlists(headers)['items']
     reduced = [{'id': p['id'], 'name': p['name']} for p in user_playlists]
     return jsonify(reduced)
+
+@app.route('/mailing_list')
+def mailing_list():
+    _, current_track = check_token()
+    return render_template('mailing_list.html', current_track=current_track)
 
 
 # ---------- PAGES END ----------
