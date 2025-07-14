@@ -335,7 +335,6 @@ def rec_feature_playlist(headers, term, title):
     # 3. look up the songs in the music_data database
     placeholders = ','.join(['?'] * len(track_ids))
     rows = cur.execute(f'SELECT * FROM music_data WHERE id IN ({placeholders})', track_ids).fetchall()
-    
     # 4. call ai function to find suggestions
     rec_set = []
     for row in rows:
@@ -355,12 +354,12 @@ def rec_feature_playlist(headers, term, title):
         'uris' : uri_list,
         'position' : 0
     }
-
     # adds items to the playlist
     requests.post(API_BASE_URL + f'playlists/{playlist_id}/tracks', headers=headers, json=data)
 
     # return that playlist's id for embed
     return playlist_id
+    
 
 def add_to_mailing_list(email_address, password):
     try:
@@ -370,7 +369,7 @@ def add_to_mailing_list(email_address, password):
             return "EXISTS"
         
         # insert new entry
-        cur.execute("INSERT INTO mailing_list (email_address, hash) VALUES (?, ?)", (email_address, password))
+        cur.execute("INSERT INTO mailing_list (email_address) VALUES (?)", (email_address,))
         con.commit()
 
     except Exception as e:
@@ -387,7 +386,7 @@ def add_to_mailing_list(email_address, password):
     
     return "ADDED"
 
-# NEED TO IMPLEMENT AN EMAIL AUTOMATION SYSTEM WHICH SUGGESTS SHOWS NEARBY
+# we could maybe make this more dynamic?
 def email_user(email_address, coords):
     email_sender = 'ayavasu@gmail.com'
     subject = 'Thank you for signing up to Ecoute!'
@@ -411,6 +410,3 @@ def email_user(email_address, coords):
 
 def get_news(num):
     return cur_2.execute("SELECT * FROM music_news ORDER BY random() LIMIT ?", (num, )).fetchall()
-
-def close_connection():
-    con.close()
