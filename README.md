@@ -1,4 +1,4 @@
-<img width="939" align="center" height="885" alt="image" src="https://github.com/user-attachments/assets/2bd2dd8c-84a7-427c-965c-9113995fa43e" />
+<img width="1900" align="center" height="633" alt="image" src="https://github.com/user-attachments/assets/2a62694f-d03e-458a-bfa1-97e58f5c527f" />
 
 
 # ECOUTE <img width="32" height="32" alt="image" src="https://github.com/user-attachments/assets/d46b7944-78df-48f6-ac18-e142d8e4ec75" />
