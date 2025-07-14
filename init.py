@@ -7,14 +7,13 @@ from sklearn.preprocessing import StandardScaler
 import numpy as np
 
 
-database_name = 'tracks_features.csv'
+database_name = 'tracks_features_medium.csv'
 df = pd.read_csv(f'datasets/{database_name}')
 df['custom_index'] = df.index
 
 
 con = sqlite3.connect("spotify_data.db", check_same_thread=False)
 cur = con.cursor()
-
 
 
 # MAILING LIST DATABASE
@@ -74,7 +73,10 @@ except Exception as e:
 
 
 # MUSIC NEWS DATABASE
+con_2 = sqlite3.connect("music_news.db", check_same_thread=False)
+cur_2 = con_2.cursor()
+
 try:
-    cur.execute("CREATE TABLE music_news (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, date TIMESTAMP NOT NULL, source TEXT NOT NULL, link TEXT NOT NULL, title TEXT NOT NULL, description TEXT NOT NULL)")
+    cur_2.execute("CREATE TABLE music_news (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, date TIMESTAMP NOT NULL, source TEXT NOT NULL, link TEXT NOT NULL, title TEXT NOT NULL, description TEXT NOT NULL, news_image TEXT NOT NULL)")
 except Exception as e:
     print(f"\n\n{e}\n\n")
