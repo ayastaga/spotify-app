@@ -19,6 +19,6 @@ The application is still underdevelopment and in the future, you can expect the 
   - Currently, the AI model is not the most accurate as a result of the lackluster data, therefore a larger database is being consolidated and a better model is being developed using cosine similarity and item-based recommendation machine learning. 
 - Deploying the app and making it more accessible
   - The app, as of now, can be downloaded and work locally but in order to make it more accessible it needs to be deployed on an app such as Vercel. Right now, I am tryign to figure out:
-    a) how to outsource the database so it doesn't store locally
-    b) how to add env variables without making them client-side/public
-    c) replacing all the initialization calls with possibly an api to make the website less bulky
+    - how to outsource the database so it doesn't store locally
+    - how to add env variables without making them client-side/public
+    - replacing all the initialization calls with possibly an api to make the website less bulky
