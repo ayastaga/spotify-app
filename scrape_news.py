@@ -143,5 +143,3 @@ if (len(cur.execute('SELECT * FROM music_news').fetchall()) == 0):
     getNewsDataFromSpotify() 
     getNewsDataFromGoogle()   
 #print(pd.read_sql_query("SELECT * FROM music_news", con))
-
-
