@@ -8,8 +8,9 @@ import dateparser
 from tzlocal import get_localzone
 from datetime import datetime
 from selenium import webdriver
+import pandas as pd
 
-con = sqlite3.connect("spotify_data.db", check_same_thread=False)
+con = sqlite3.connect("music_news.db", check_same_thread=False)
 cur = con.cursor()
 
 cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_music_news_link ON music_news(link)")
@@ -136,9 +137,11 @@ def getNewsDataFromSpotify():
             con.commit()
         except Exception as e:
             print(e)
-                
-#getNewsDataFromSpotify() --> run this to put in data
-#getNewsDataFromGoogle() --> run this to put in data
-print(pd.read_sql_query("SELECT * FROM music_news", con))
+
+
+if (len(cur.execute('SELECT * FROM music_news').fetchall()) == 0):
+    getNewsDataFromSpotify() 
+    getNewsDataFromGoogle()   
+#print(pd.read_sql_query("SELECT * FROM music_news", con))
 
 
