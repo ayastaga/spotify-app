@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, jsonify, session
+from flask import Flask, request, render_template, redirect, jsonify, url_for, session, flash
 from flask_session import Session
 from init import *
 from scrape_news import *
@@ -29,32 +29,24 @@ def login():
 @app.route("/logout")
 def logout():
     session.clear()
-    close_connection()
     return redirect("/")
 
 # refine this to have error messaging on the same page/div
 @app.route("/mailing_list_signup", methods=["POST"])
 def mailing_list_signup():
-    data = request.get_json()
-
-    email_address = data.get("email_address")
-    password = data.get("password")
-    latitude = data.get("latitude")
-    longitude = data.get("longitude")
+    email_address = request.form.get("email_address")
+    latitude = request.form.get("latitude")
+    longitude = request.form.get("longitude")
 
     if not email_address:
         return jsonify({"message": "must provide email address"}), 400
     if not re.match(r"[^@]+@[^@]+\.[^@]+", email_address):
         return jsonify({"message": "please enter a proper email address"}), 400
-    if not password:
-        return jsonify({"message": "must provide password"}), 400
 
     coords = [latitude, longitude]
-    user_message = add_to_mailing_list(email_address, generate_password_hash(password), coords)
-
+    user_message = add_to_mailing_list(email_address, coords)
     email_user(email_address, coords)
-
-    return jsonify({"message": user_message}), 200
+    return redirect('/')
 
 @app.route('/terms_and_conditions')
 def terms_and_conditions():
@@ -76,17 +68,21 @@ def logged_music_news():
 def callback():
     if 'error' in request.args:
         return jsonify({"error": request.args['error']})
+    
     # going to request an access token here
     if 'code' in request.args:
         token_info = get_token_info(request.args['code'])
         session['access_token'] = token_info['access_token']
         session['refresh_token'] = token_info['refresh_token']
         session['expires_at'] = token_info['expires_in'] + datetime.now().timestamp()
+        
         headers = {
             'Authorization' : f"Bearer {session['access_token']}"
         }
         session['user_id'] = get_user_id(headers)
         return redirect('/tracks')
+        
+    
     return redirect('/')
 
 def check_token():
@@ -110,12 +106,12 @@ def check_token():
 # ---------- JS ROUTES ----------
 @app.route('/current-track')
 def current_track():
-    headers, current_track = check_token()
+    _, current_track = check_token()
     return jsonify({'embed_url' : current_track})
 
 @app.route('/recently-played')
 def recently_played():
-    headers, current_tracks = check_token()
+    headers, _ = check_token()
     return jsonify(get_recently_played(headers))
 
 @app.route('/fav-tracks-short-term')
