@@ -17,8 +17,8 @@ This is a web application designed for music-junkies who love to know _everythin
 
 In addition to this, you can also sign up to our **mailing list**, where you will be recommended upcoming local shows near you. Morevoer, the website has a playlist component, in which using a database of song attributes (since the Spotify API depreciated it's own song attributes), the website will try it's best to recommend you songs that you might like! 
 
+## Demo Video
 <p align="center">
-  DEMO VIDEO
   <a href="https://www.youtube.com/watch?v=rWWk0AjyVKE">
     <img src="https://img.youtube.com/vi/rWWk0AjyVKE/0.jpg" alt="Watch the video" />
   </a>
