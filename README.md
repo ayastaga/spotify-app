@@ -15,8 +15,9 @@ In addition to this, you can also sign up to our **mailing list**, where you wil
 
 The application is still underdevelopment and in the future, you can expect the following changes:
 
+- Implementing an email automation system through geolocation to suggest local nearby shows 
 - Improved functionality of track recommendation function
-  - Currently, the AI model is not the most accurate as a result of the lackluster data, therefore a larger database is being consolidated and a better model is being developed using cosine similarity and item-based recommendation machine learning. 
+  - Currently, the AI model is not the most accurate as a result of the lackluster data, therefore a larger database is being consolidated and a better model is being developed using cosine similarity and item-based recommendation machine learning.
 - Deploying the app and making it more accessible
   - The app, as of now, can be downloaded and work locally but in order to make it more accessible it needs to be deployed on an app such as Vercel. Right now, I am tryign to figure out:
     - how to outsource the database so it doesn't store locally
