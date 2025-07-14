@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 import numpy as np
 
 
-database_name = 'tracks_features.csv'
+database_name = 'tracks_features_medium.csv'
 df = pd.read_csv(f'datasets/{database_name}')
 df['custom_index'] = df.index
 
@@ -14,7 +14,6 @@ con = sqlite3.connect("spotify_data.db", check_same_thread=False)
 cur = con.cursor()
 
 
-'''
 # MAILING LIST DATABASE
 try:
     cur.execute("CREATE TABLE mailing_list (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, email_address TEXT NOT NULL, hash TEXT NOT NULL)")
@@ -69,7 +68,6 @@ try:
     con.commit()
 except Exception as e:
     print(f"\n\n{e}\n\n")
-'''
 
 # --------------------------------------------------------
 features = ['danceability', 'energy', 'loudness', 'mode', 'speechiness',
