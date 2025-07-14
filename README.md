@@ -1,4 +1,5 @@
-# ECOUTE
+# ECOUTE <img width="32" height="32" alt="image" src="https://github.com/user-attachments/assets/d46b7944-78df-48f6-ac18-e142d8e4ec75" />
+
 
 This is a web application designed for music-junkies who love to know _everything_ about their music. Within this website, you can login (done by usign uAuth2.0), after which you can see your:
 
