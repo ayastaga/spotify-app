@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="container col-xl-10 col-xxl-8 px-4">
+        <h1 class="py-4 text-center">view all your music news here</h1>
+        <div class="row g-4 justify-content-around" >  <!-- Bootstrap's gutter spacing -->
+            {% for news in top_news %}
+            <div class="col-md-6" style="width: 180px;"> <!-- 2 per row on medium+ screens -->
+                <div class="card">
+                    <img src="{{ news[6] }}" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ news[4] }}</h5>
+                        <p class="card-text truncate-multiline">{{ news[5] }}</p>
+                        <a href="{{news[3]}}" target="_blank" class="btn btn-primary">Read more</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
