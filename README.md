@@ -1,3 +1,6 @@
+<img width="937" height="424" alt="image" src="https://github.com/user-attachments/assets/4c374bbb-ac5f-454f-be35-4043f9782e97" />
+
+
 # ECOUTE <img width="32" height="32" alt="image" src="https://github.com/user-attachments/assets/d46b7944-78df-48f6-ac18-e142d8e4ec75" />
 
 
