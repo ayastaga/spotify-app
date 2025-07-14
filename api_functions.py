@@ -36,6 +36,9 @@ API_BASE_URL = 'https://api.spotify.com/v1/'
 con = sqlite3.connect("spotify_data.db", check_same_thread=False)
 cur = con.cursor()
 
+con_2 = sqlite3.connect('music_news.db', check_same_thread=False)
+cur_2 = con_2.cursor()
+
 def convert_time(iso_string):
     local_tz = tzlocal.get_localzone_name()
     dt_utc = datetime.fromisoformat(iso_string.replace('Z', '+00:00'))
@@ -407,4 +410,7 @@ def email_user(email_address):
         smtp.sendmail(email_sender, email_address, em.as_string())
 
 def get_news(num):
-    return cur.execute("SELECT * FROM music_news ORDER BY random() LIMIT ?", (num, )).fetchall()
+    return cur_2.execute("SELECT * FROM music_news ORDER BY random() LIMIT ?", (num, )).fetchall()
+
+def close_connection():
+    con.close()
